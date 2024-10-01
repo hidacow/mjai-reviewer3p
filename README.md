@@ -1,25 +1,35 @@
-# mjai-reviewer
+# mjai-reviewer3p
 
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/Equim-chan/mjai-reviewer/build.yml)](https://github.com/Equim-chan/mjai-reviewer/actions)
-[![dependency status](https://deps.rs/repo/github/Equim-chan/mjai-reviewer/status.svg)](https://deps.rs/repo/github/Equim-chan/mjai-reviewer)
-![GitHub top language](https://img.shields.io/github/languages/top/Equim-chan/mjai-reviewer)
-![Lines of code](https://www.aschey.tech/tokei/github/Equim-chan/mjai-reviewer)
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/Equim-chan/mjai-reviewer)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/hidacow/mjai-reviewer3p/build.yml)](https://github.com/Equim-chan/mjai-reviewer/actions)
+[![dependency status](https://deps.rs/repo/github/hidacow/mjai-reviewer3p/status.svg)](https://deps.rs/repo/github/Equim-chan/mjai-reviewer)
+![GitHub top language](https://img.shields.io/github/languages/top/hidacow/mjai-reviewer3p)
+![Lines of code](https://www.aschey.tech/tokei/github/hidacow/mjai-reviewer3p)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/hidacow/mjai-reviewer3p)
 [![License](https://img.shields.io/github/license/Equim-chan/mjai-reviewer)](https://github.com/Equim-chan/mjai-reviewer/blob/master/LICENSE)
 
 [![Donate](https://img.shields.io/badge/Donate-%E2%9D%A4%EF%B8%8F-blue?style=social)](https://mortal.ekyu.moe/donate.html)
 
-Review your mahjong gameplay with the help of mjai-compatible mahjong AI engines, including [Mortal](https://github.com/Equim-chan/Mortal) and [akochan](https://github.com/critter-mj/akochan).
+> **This is a fork to support reviewing 3-player mahjong.**
+>
+> You should modify the Mortal engine (Use libriichi3p, remove Grp related code, etc.) to make it work with this fork.
+>
+> The action label (eg. 40 => Event::Nukidora) should be matched if you have another implementation of 3p model.
+
+Review your mahjong gameplay with the help of mjai-compatible mahjong AI engines,
+including [Mortal](https://github.com/Equim-chan/Mortal) and [akochan](https://github.com/critter-mj/akochan).
 
 **[Try it online](https://mjai.ekyu.moe)** | [Demo result page](https://gh.ekyu.moe/mjai-reviewer-demo.html)
 
-It is recommended to just use the [web app](https://mjai.ekyu.moe), which works for Mahjong Soul games out-of-the-box, no download, no install, no extension, and it is free to use.
+It is recommended to just use the [web app](https://mjai.ekyu.moe), which works for Mahjong Soul games out-of-the-box,
+no download, no install, no extension, and it is free to use.
 
-mjai-reviewer 1.x.x is incompatible with 0.x.x versions, which were previously known as akochan-reviewer. If you prefer the old version, check out [v0 branch](https://github.com/Equim-chan/mjai-reviewer/tree/v0).
+mjai-reviewer 1.x.x is incompatible with 0.x.x versions, which were previously known as akochan-reviewer. If you prefer
+the old version, check out [v0 branch](https://github.com/Equim-chan/mjai-reviewer/tree/v0).
 
 [Guide on reviewing mahjong soul logs locally](https://github.com/Equim-chan/mjai-reviewer/blob/master/mjsoul.adoc)
 
 ## Usage
+
 ```console
 $ # Review https://tenhou.net/0/?log=2019050417gm-0029-0000-4f2a8622&tw=2
 $ # Note that you may need to quote it in the shell to escape the string
@@ -41,34 +51,43 @@ $ mjai-reviewer -e mortal -k E2.1,E3 -u "https://tenhou.net/0/?log=2019050417gm-
 Use the `--help` argument for more details.
 
 ## FAQ
+
 See [FAQ](https://github.com/Equim-chan/mjai-reviewer/blob/master/faq.md).
 
 ## Troubleshooting
+
 ### (akochan) `Assertion failed` errors on Windows
+
 Set environment variable `OMP_NUM_THREADS=8`.
 
 Under cmd
+
 ```console
 > set OMP_NUM_THREADS=8
 ```
 
 Under Powershell
+
 ```console
 > $env:OMP_NUM_THREADS = 8
 ```
 
 Under MSYS2 bash
+
 ```console
 $ export OMP_NUM_THREADS=8
 ```
 
 ### (akochan) `libai.so` not found on Linux
+
 Try adding the directory of `libai.so` to env `LD_LIBRARY_PATH`.
 
-
 ## Build
+
 ### mjai-reviewer
-Follow the instructions [here](https://www.rust-lang.org/learn/get-started) to install Rust toolchains first, if you haven't yet.
+
+Follow the instructions [here](https://www.rust-lang.org/learn/get-started) to install Rust toolchains first, if you
+haven't yet.
 
 ```console
 $ cd ..
@@ -79,18 +98,22 @@ $ cargo build --release
 `mjai-reviewer` binary will be in `target/release` directory.
 
 ### Engines
+
 #### Mortal
+
 See [Mortal's documentation](https://mortal.ekyu.moe/user/build.html).
 
 You also need a trained model file to actually use Mortal.
 
 #### Akochan
+
 ```console
 $ git clone https://github.com/critter-mj/akochan.git
 $ cd akochan
 ```
 
-You have to edit `Makefile` and `ai_src/Makfefile` accordingly. Set up correct path for boost and some other options like `-march=native` of your choice.
+You have to edit `Makefile` and `ai_src/Makfefile` accordingly. Set up correct path for boost and some other options
+like `-march=native` of your choice.
 
 <details><summary>On Windows MSYS2 with MinGW-w64 toolchain</summary>
 <p>
@@ -149,9 +172,11 @@ $ make -f Makefile_Linux
 </details>
 
 ## Docker
+
 Currently the docker image is not maintained and it only embeds akochan engine.
 
 ### Build
+
 ```console
 $ git clone https://github.com/Equim-chan/mjai-reviewer.git
 $ cd mjai-reviewer
@@ -160,13 +185,16 @@ $ docker build -t mjai-reviewer:latest .
 ```
 
 ### Usage
+
 ```console
 $ docker run --rm mjai-reviewer:latest -e akochan --no-open -t 2019050417gm-0029-0000-4f2a8622 -a 3 -o - > report.html
 $ open report.html  # or just open in browser
 ```
 
 ## License
+
 [Apache-2.0](https://github.com/Equim-chan/mjai-reviewer/blob/master/LICENSE)
 
 ## Contributors
+
 [![Contributors](https://contrib.rocks/image?repo=Equim-chan/mjai-reviewer)](https://github.com/Equim-chan/mjai-reviewer/graphs/contributors)
