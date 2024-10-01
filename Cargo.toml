@@ -1,6 +1,6 @@
 [package]
 name = "mjai-reviewer"
-version = "1.5.10"
+version = "1.5.10-3p"
 authors = ["Equim"]
 edition = "2021"
 repository = "https://github.com/Equim-chan/mjai-reviewer"
@@ -21,7 +21,7 @@ humantime-serde = "1"
 url = "2"
 serde_with = "3"
 minify-html = "0.15"
-fluent-templates = { version = "0.9.0", features = ["tera"] }
+fluent-templates = { version = "0.11.0", features = ["tera"] }
 clap = { version = "4", features = ["derive"] }
 serde = { version = "1", features = ["derive"] }
 

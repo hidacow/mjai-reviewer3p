@@ -73,6 +73,8 @@
     {{ self::render_tile(tile=action.consumed[0]) }}
   {%- elif action.type == "ryukyoku" -%}
     {{- fluent(key = "action-ryuukyoku") -}}
+  {%- elif action.type == "nukidora" -%}
+    {{- fluent(key = "action-nukidora") -}}
   {%- endif -%}
 {%- endmacro render_action -%}
 

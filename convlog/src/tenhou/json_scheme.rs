@@ -70,8 +70,8 @@ pub(super) struct RawKyoku {
     pub(super) takes_2: Vec<ActionItem>,
     pub(super) discards_2: Vec<ActionItem>,
 
-    #[serde_as(as = "[FromInto<TenhouTile>; 13]")]
-    pub(super) haipai_3: [Tile; 13],
+    #[serde_as(as = "[FromInto<TenhouTile>; 0]")]
+    pub(super) haipai_3: [Tile; 0],
     pub(super) takes_3: Vec<ActionItem>,
     pub(super) discards_3: Vec<ActionItem>,
 

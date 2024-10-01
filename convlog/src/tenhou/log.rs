@@ -12,8 +12,8 @@ pub enum ParseError {
         #[from]
         source: json::Error,
     },
-    #[error("not four-player game")]
-    NotFourPlayer,
+    #[error("not three-player game")]
+    NotThreePlayer,
     #[error("invalid hora detail")]
     InvalidHoraDetail,
 }
@@ -89,8 +89,8 @@ impl TryFrom<RawLog> for Log {
             logs, names, rule, ..
         } = raw_log;
 
-        if rule.disp.contains('三') || rule.disp.contains("3-Player") {
-            return Err(ParseError::NotFourPlayer);
+        if rule.disp.contains('四') || rule.disp.contains("4-Player") {
+            return Err(ParseError::NotThreePlayer);
         }
         let game_length = if rule.disp.contains('東') || rule.disp.contains("East") {
             GameLength::Tonpuu
@@ -123,7 +123,7 @@ impl TryFrom<RawLog> for Log {
                         discards: log.discards_2,
                     },
                     ActionTable {
-                        haipai: log.haipai_3,
+                        haipai: [Tile::default(); 13],
                         takes: log.takes_3,
                         discards: log.discards_3,
                     },

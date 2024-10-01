@@ -104,9 +104,9 @@ mod tactics;
 mod tehai;
 
 use crate::log_source::LogSource;
-use crate::opts::{AkochanOptions, Engine, InputOptions, MortalOptions, Options, OutputOptions};
+use crate::opts::{Engine, InputOptions, MortalOptions, Options, OutputOptions};
 use crate::render::View;
-use crate::review::{akochan, mortal, Review};
+use crate::review::{mortal, Review};
 use chrono::SubsecRound;
 use convlog::tenhou::{GameLength, Log, RawLog};
 use convlog::tenhou_to_mjai;
@@ -173,12 +173,6 @@ fn main() -> Result<()> {
                 mortal_cfg,
                 temperature,
             },
-        akochan_opts:
-            AkochanOptions {
-                akochan_dir,
-                akochan_tactics,
-                deviation_threshold,
-            },
     } = Options::parse();
 
     // sometimes the log URL contains the actor info
@@ -206,8 +200,8 @@ fn main() -> Result<()> {
                 "log" => log = Some(v.into_owned()),
                 "tw" => {
                     let num: u8 = v.parse().context("\"tw\" must be a number")?;
-                    if num >= 4 {
-                        bail!("\"tw\" must be within 0-3, got {num}");
+                    if num >= 3 {
+                        bail!("\"tw\" must be within 0-2, got {num}");
                     }
                     tw = Some(num);
                 }
@@ -337,7 +331,7 @@ fn main() -> Result<()> {
     let engine = engine.unwrap();
 
     if engine == Engine::Mortal && log.game_length != GameLength::Hanchan {
-        bail!("Mortal supports hanchan games only");
+        // bail!("Mortal supports hanchan games only");
     }
 
     // get player id
@@ -362,23 +356,7 @@ fn main() -> Result<()> {
             Review::Mortal(result)
         }
         Engine::Akochan => {
-            let akochan_exe: PathBuf = [&akochan_dir, Path::new("system.exe")]
-                .into_iter()
-                .collect();
-            let akochan_dir = canonicalize!(akochan_dir)?;
-            let akochan_exe = canonicalize!(akochan_exe)?;
-            let akochan_tactics = canonicalize!(akochan_tactics)?;
-            let reviewer = akochan::Reviewer {
-                akochan_exe: &akochan_exe,
-                akochan_dir: &akochan_dir,
-                tactics_config: &akochan_tactics,
-                events: &events,
-                player_id,
-                deviation_threshold,
-                verbose,
-            };
-            let result = reviewer.review().context("failed to review")?;
-            Review::Akochan(result)
+            bail!("akochan engine for 3p is not implemented yet");
         }
     };
 

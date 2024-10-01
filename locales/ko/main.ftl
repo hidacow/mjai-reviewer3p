@@ -9,6 +9,7 @@ action-riichi = 리치
 action-ron = 론
 action-ryuukyoku = 유국
 action-tsumo = 쯔모
+action-nukidora = 노스 도라
 
 donate-header = 기부
 

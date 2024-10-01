@@ -9,6 +9,7 @@ action-riichi = 立直
 action-ron = ロン
 action-ryuukyoku = 流局
 action-tsumo = ツモ
+action-nukidora = 北抜き
 
 donate-header = 寄付
 

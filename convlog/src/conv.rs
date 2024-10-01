@@ -120,7 +120,7 @@ fn tenhou_kyoku_to_mjai_events(kyoku: &Kyoku) -> Result<Vec<Event>> {
             tehais: array::from_fn(|i| kyoku.action_tables[i].haipai),
         });
 
-        let mut discard_sets: Vec<_> = (0..4)
+        let mut discard_sets: Vec<_> = (0..3)
             .map(|a| {
                 let mut m = AHashMap::new();
                 for discard in &discard_events[a] {
@@ -146,14 +146,21 @@ fn tenhou_kyoku_to_mjai_events(kyoku: &Kyoku) -> Result<Vec<Event>> {
 
         loop {
             // Start to process a take event.
-            let take = take_events[actor].get(take_idxs[actor]).ok_or(
-                ConvertError::InsufficientTakes {
-                    kyoku: kyoku.meta.kyoku_num,
-                    honba: kyoku.meta.honba,
-                    actor: actor as u8,
-                },
-            )?;
-            take_idxs[actor] += 1;
+            let take = if actor == 3 {
+                &Event::None
+            } else {
+                take_events[actor]
+                    .get(take_idxs[actor])
+                    .ok_or(ConvertError::InsufficientTakes {
+                        kyoku: kyoku.meta.kyoku_num,
+                        honba: kyoku.meta.honba,
+                        actor: actor as u8,
+                    })?
+            };
+
+            if actor != 3 {
+                take_idxs[actor] += 1;
+            }
 
             if let Some((target, pai)) = take.naki_info() {
                 if pai != last_discard
@@ -214,26 +221,33 @@ fn tenhou_kyoku_to_mjai_events(kyoku: &Kyoku) -> Result<Vec<Event>> {
             };
 
             // Emit the take event.
-            events.push(take.clone());
+            if actor != 3 {
+                events.push(take.clone());
+            }
 
             // Check if the kyoku ends here, can be ryukyoku (九種九牌) or tsumo.
             // Here it simply checks if there is no more discard for current actor.
-            if discard_idxs[actor] >= discard_events[actor].len() {
+            if discard_idxs[actor] >= discard_events[actor].len() && actor != 3 {
                 end_kyoku(&mut events, kyoku);
                 break;
             }
 
             // Start to process a discard event.
-            let discard = discard_events[actor]
-                .get(discard_idxs[actor])
-                .ok_or(ConvertError::InsufficientDiscards {
-                    kyoku: kyoku.meta.kyoku_num,
-                    honba: kyoku.meta.honba,
-                    actor: actor as u8,
-                })?
-                .clone();
-            discard_idxs[actor] += 1;
-
+            let discard = if actor == 3 {
+                Event::None.clone()
+            } else {
+                discard_events[actor]
+                    .get(discard_idxs[actor])
+                    .ok_or(ConvertError::InsufficientDiscards {
+                        kyoku: kyoku.meta.kyoku_num,
+                        honba: kyoku.meta.honba,
+                        actor: actor as u8,
+                    })?
+                    .clone()
+            };
+            if actor != 3 {
+                discard_idxs[actor] += 1;
+            }
             // Record the pai to check if someone naki it.
             if let Event::Dahai { pai, .. } = discard {
                 last_discard = pai;
@@ -263,7 +277,9 @@ fn tenhou_kyoku_to_mjai_events(kyoku: &Kyoku) -> Result<Vec<Event>> {
             }
 
             // Emit the discard event.
-            events.push(discard.clone());
+            if actor != 3 {
+                events.push(discard.clone());
+            }
 
             // Process reach declare.
             //
@@ -292,7 +308,7 @@ fn tenhou_kyoku_to_mjai_events(kyoku: &Kyoku) -> Result<Vec<Event>> {
             //
             // Here it simply checks if there is no more take for every single
             // actor.
-            if (0..4).all(|a| take_idxs[a] >= take_events[a].len()) {
+            if (0..3).all(|a| take_idxs[a] >= take_events[a].len()) {
                 end_kyoku(&mut events, kyoku);
                 break;
             }
@@ -318,6 +334,9 @@ fn tenhou_kyoku_to_mjai_events(kyoku: &Kyoku) -> Result<Vec<Event>> {
                     need_new_dora_at_discard = true;
                     continue;
                 }
+                Event::Nukidora { .. } => {
+                    continue;
+                }
                 _ => (),
             }
 
@@ -329,7 +348,7 @@ fn tenhou_kyoku_to_mjai_events(kyoku: &Kyoku) -> Result<Vec<Event>> {
             // There are some edge cases when there are multiple candidates for the
             // next actor, which will be handled by the second pass of the filter.
             last_actor = Some(actor as u8);
-            actor = (0..4)
+            actor = (0..3)
                 .filter(|&a| a != actor)
                 // First pass, filter the naki that takes the specific tile from the
                 // specific target.
@@ -719,7 +738,7 @@ fn discard_action_to_events(actor: u8, discards: &[ActionItem]) -> Result<Vec<Ev
                     };
 
                     ret.push(ev);
-                } else {
+                } else if naki.contains(&b'r') {
                     // reach
                     // e.g. "r35" => discard 5s to reach
 
@@ -739,6 +758,24 @@ fn discard_action_to_events(actor: u8, discards: &[ActionItem]) -> Result<Vec<Ev
                         pai, // must be filled later if it is tsumogiri
                         tsumogiri: pai == t!(?),
                     });
+                } else if naki.contains(&b'f') {
+                    // nukidora
+                    // e.g. "f44" => Nukidora N
+
+                    if naki_string.len() != 3 {
+                        return Err(ConvertError::InvalidNaki(naki_string.clone()));
+                    }
+                    if &naki[1..3] != b"44" {
+                        return Err(ConvertError::InvalidNaki(naki_string.clone()));
+                    }
+                    let ev = Event::Nukidora {
+                        actor,
+                        pai: tiles_from_tenhou_bytes(&naki[1..3])?,
+                    };
+
+                    ret.push(ev);
+                } else {
+                    return Err(ConvertError::InvalidNaki(naki_string.clone()));
                 }
             }
         };

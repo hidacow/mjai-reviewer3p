@@ -166,45 +166,6 @@
       {%- endif -%}
 
       <div class="r-box">
-        {%- if engine == "Mortal" -%}
-          <details class="collapse" open>
-            <summary>{{- fluent(key = "final-ranking-probs-at-the-start-of-kyoku", kyoku = kyoku_str) -}}</summary>
-            <table border="1" cellspacing="0" cellpadding="0" class="data">
-              <thead>
-                <tr>
-                  <th>{{- fluent(key = "player") -}}</th>
-                  <th>{{- fluent(key = "score-header") -}}</th>
-                  <th>{{- fluent(key = "place-percentage", rank = 1) -}}</th>
-                  <th>{{- fluent(key = "place-percentage", rank = 2) -}}</th>
-                  <th>{{- fluent(key = "place-percentage", rank = 3) -}}</th>
-                  <th>{{- fluent(key = "place-percentage", rank = 4) -}}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {%- for player_probs in review.relative_phi_matrix[k_id] -%}
-                  {%- set player = loop.index0 -%}
-                  <tr>
-                    <td>
-                      {{- macros::seat_rel(target=player) -}}
-                    </td>
-                    <td>
-                      <span class="int">
-                        {{- item.relative_scores[player] -}}
-                      </span>
-                    </td>
-                    {%- for prob in player_probs -%}
-                      <td>
-                        {# <span title="{{ prob * 100 }}"> #}
-                        {{- macros::render_decimal(num=prob * 100, prec=3) -}}
-                      </td>
-                    {%- endfor -%}
-                  </tr>
-                {%- endfor -%}
-              </tbody>
-            </table>
-          </details>
-        {%- endif -%}
-
         {%- for entry in item.entries -%}
           {%- if engine == "Mortal" -%}
             {%- set mark_red = not entry.is_equal -%}

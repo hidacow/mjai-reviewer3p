@@ -21,7 +21,7 @@ pub struct Review {
     pub temperature: f32,
     pub kyokus: Vec<KyokuReview>,
 
-    pub relative_phi_matrix: Vec<[[f64; 4]; 4]>,
+    // pub relative_phi_matrix: Vec<[[f64; 4]; 4]>,
     pub model_tag: String,
 }
 
@@ -101,7 +101,7 @@ struct Metadata {
 #[derive(Deserialize)]
 struct ExtraData {
     model_tag: String,
-    phi_matrix: Vec<[[f64; 4]; 4]>,
+    // phi_matrix: Vec<[[f64; 4]; 4]>,
 }
 
 pub struct Reviewer<'a> {
@@ -158,7 +158,7 @@ impl Reviewer<'_> {
         let mut kyoku_review = KyokuReview::default();
         let mut state = State::new(player_id);
         let mut junme = 0;
-        let mut tiles_left = 70;
+        let mut tiles_left = 55;
         let mut last_tsumo_or_discard = None;
         let mut last_actor = 0;
         let mut entries = vec![];
@@ -187,7 +187,7 @@ impl Reviewer<'_> {
                     kyoku_review.honba = honba;
                     kyoku_review.relative_scores = scores;
                     kyoku_review.relative_scores.rotate_left(player_id as usize);
-                    tiles_left = 70;
+                    tiles_left = 55;
                 }
 
                 Event::EndKyoku => {
@@ -219,6 +219,11 @@ impl Reviewer<'_> {
 
                 Event::Dahai { pai, .. } | Event::Kakan { pai, .. } => {
                     last_tsumo_or_discard = Some(pai);
+                }
+
+                Event::Nukidora { pai, .. } => {
+                    last_tsumo_or_discard = Some(pai);
+                    //junme += 1;
                 }
 
                 _ => (),
@@ -263,9 +268,9 @@ impl Reviewer<'_> {
                 continue;
             }
             let masks = masks_from_bits(mask_bits);
-            let can_pon_or_daiminkan = masks[41] || masks[42];
-            let can_agari = masks[43];
-            let can_ryukyoku = masks[44];
+            let can_pon_or_daiminkan = masks[38] || masks[39];
+            let can_agari = masks[41];
+            let can_ryukyoku = masks[42];
 
             let Some(actual) = next_action(
                 &events[i + 1..],
@@ -420,13 +425,13 @@ impl Reviewer<'_> {
 
         let ExtraData {
             model_tag,
-            mut phi_matrix,
+            // mut phi_matrix,
         } = json::from_str(&line).context("failed to parse JSON output of engine")?;
-        ensure!(phi_matrix.len() == kyoku_reviews.len());
+        // ensure!(phi_matrix.len() == kyoku_reviews.len());
 
-        for k in &mut phi_matrix {
-            k.rotate_left(player_id as usize);
-        }
+        // for k in &mut phi_matrix {
+        //     k.rotate_left(player_id as usize);
+        // }
 
         let status = mortal.wait()?;
         if !status.success() {
@@ -443,13 +448,13 @@ impl Reviewer<'_> {
             rating,
             temperature,
             kyokus: kyoku_reviews,
-            relative_phi_matrix: phi_matrix,
+            // relative_phi_matrix: phi_matrix,
             model_tag,
         })
     }
 }
 
-fn masks_from_bits(bits: u64) -> [bool; 46] {
+fn masks_from_bits(bits: u64) -> [bool; 44] {
     array::from_fn(|i| (bits >> i) & 0b1 == 0b1)
 }
 
@@ -474,6 +479,7 @@ fn equal_ignore_aka_consumed(a: &Event, b: &Event) -> bool {
         (Event::Reach { .. }, Event::Reach { .. })
         | (Event::Hora { .. }, Event::Hora { .. })
         | (Event::Ryukyoku { .. }, Event::Ryukyoku { .. })
+        | (Event::Nukidora { .. }, Event::Nukidora { .. })
         | (Event::None, Event::None) => true,
 
         _ => false,
@@ -484,25 +490,12 @@ fn to_label(ev: &Event) -> usize {
     match ev {
         Event::Dahai { pai, .. } => pai.as_usize(),
         Event::Reach { .. } => 37,
-        Event::Chi { pai, consumed, .. } => {
-            let a = consumed[0].deaka().as_usize();
-            let b = consumed[1].deaka().as_usize();
-            let min = a.min(b);
-            let max = a.max(b);
-            let x = pai.deaka().as_usize();
-            if x < min {
-                38
-            } else if x < max {
-                39
-            } else {
-                40
-            }
-        }
-        Event::Pon { .. } => 41,
-        Event::Daiminkan { .. } | Event::Ankan { .. } | Event::Kakan { .. } => 42,
-        Event::Hora { .. } => 43,
-        Event::Ryukyoku { .. } => 44,
-        _ => 45,
+        Event::Pon { .. } => 38,
+        Event::Daiminkan { .. } | Event::Ankan { .. } | Event::Kakan { .. } => 39,
+        Event::Nukidora { .. } => 40,
+        Event::Hora { .. } => 41,
+        Event::Ryukyoku { .. } => 42,
+        _ => 43,
     }
 }
 
@@ -546,66 +539,6 @@ fn to_event(
         },
         37 => Event::Reach { actor },
         38 => {
-            let pai = last_tsumo_or_discard.context("missing last discard for Chi")?;
-            let can_akaize_consumed = match pai.as_u8() {
-                tu8!(3m) | tu8!(4m) => state.has_tile(t!(5mr)),
-                tu8!(3p) | tu8!(4p) => state.has_tile(t!(5pr)),
-                tu8!(3s) | tu8!(4s) => state.has_tile(t!(5sr)),
-                _ => false,
-            };
-            let consumed = if can_akaize_consumed {
-                [pai.next().akaize(), pai.next().next().akaize()]
-            } else {
-                [pai.next(), pai.next().next()]
-            };
-            Event::Chi {
-                actor,
-                target,
-                pai,
-                consumed,
-            }
-        }
-        39 => {
-            let pai = last_tsumo_or_discard.context("missing last discard for Chi")?;
-            let can_akaize_consumed = match pai.as_u8() {
-                tu8!(4m) | tu8!(6m) => state.has_tile(t!(5mr)),
-                tu8!(4p) | tu8!(6p) => state.has_tile(t!(5pr)),
-                tu8!(4s) | tu8!(6s) => state.has_tile(t!(5sr)),
-                _ => false,
-            };
-            let consumed = if can_akaize_consumed {
-                [pai.prev().akaize(), pai.next().akaize()]
-            } else {
-                [pai.prev(), pai.next()]
-            };
-            Event::Chi {
-                actor,
-                target,
-                pai,
-                consumed,
-            }
-        }
-        40 => {
-            let pai = last_tsumo_or_discard.context("missing last discard for Chi")?;
-            let can_akaize_consumed = match pai.as_u8() {
-                tu8!(6m) | tu8!(7m) => state.has_tile(t!(5mr)),
-                tu8!(6p) | tu8!(7p) => state.has_tile(t!(5pr)),
-                tu8!(6s) | tu8!(7s) => state.has_tile(t!(5sr)),
-                _ => false,
-            };
-            let consumed = if can_akaize_consumed {
-                [pai.prev().prev().akaize(), pai.prev().akaize()]
-            } else {
-                [pai.prev().prev(), pai.prev()]
-            };
-            Event::Chi {
-                actor,
-                target,
-                pai,
-                consumed,
-            }
-        }
-        41 => {
             let pai = last_tsumo_or_discard.context("missing last discard for Pon")?;
             let can_akaize_consumed = match pai.as_u8() {
                 tu8!(5m) => state.has_tile(t!(5mr)),
@@ -625,20 +558,24 @@ fn to_event(
                 consumed,
             }
         }
-        42 => {
+        39 => {
             // in fact this is Daiminkan
             let tile = last_tsumo_or_discard.context("missing last discard for Daiminkan")?;
             let consumed = [tile, tile.deaka(), tile.deaka(), tile.deaka()];
             Event::Ankan { actor, consumed }
         }
-        43 => Event::Hora {
+        40 => Event::Nukidora {
+            actor,
+            pai: Tile::try_from(tu8!(N))?,
+        },
+        41 => Event::Hora {
             actor,
             target,
             deltas: None,
             ura_markers: None,
         },
-        44 => Event::Ryukyoku { deltas: None },
-        45 => Event::None,
+        42 => Event::Ryukyoku { deltas: None },
+        43 => Event::None,
 
         _ => bail!("unexpected label {label}"),
     };

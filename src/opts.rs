@@ -64,9 +64,6 @@ pub struct Options {
 
     #[clap(flatten, next_help_heading = "Mortal Options")]
     pub mortal_opts: MortalOptions,
-
-    #[clap(flatten, next_help_heading = "Akochan Options")]
-    pub akochan_opts: AkochanOptions,
 }
 
 #[derive(Debug, Args)]
@@ -173,26 +170,6 @@ pub struct MortalOptions {
     /// not change action orders or ratings.
     #[clap(long, value_name = "TEMP", default_value = "0.1", value_parser = parse_temperature)]
     pub temperature: f32,
-}
-
-#[derive(Debug, Args)]
-pub struct AkochanOptions {
-    #[clap(
-        long,
-        value_name = "DIR",
-        default_value_os = OsStr::new("./akochan")
-    )]
-    pub akochan_dir: PathBuf,
-
-    #[clap(
-        long,
-        value_name = "FILE",
-        default_value_os = OsStr::new("./akochan/tactics.json")
-    )]
-    pub akochan_tactics: PathBuf,
-
-    #[clap(long, value_name = "DEV", default_value = "0.05")]
-    pub deviation_threshold: f64,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, ValueEnum)]

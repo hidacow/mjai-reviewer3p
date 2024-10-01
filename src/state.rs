@@ -31,6 +31,7 @@ impl State {
     /// * Kakan
     /// * Daiminkan
     /// * Ankan
+    /// * Nukidora
     ///
     /// and the `actor` must be the target actor.
     ///
@@ -70,6 +71,10 @@ impl State {
                     consumed,
                 };
                 self.fuuros.push(fuuro);
+            }
+
+            Event::Nukidora { actor, pai } if actor == self.actor => {
+                self.tehai.tedashi(pai);
             }
 
             Event::Pon {
