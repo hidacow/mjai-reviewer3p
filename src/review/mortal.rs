@@ -486,7 +486,7 @@ fn equal_ignore_aka_consumed(a: &Event, b: &Event) -> bool {
     }
 }
 
-fn to_label(ev: &Event) -> usize {
+const fn to_label(ev: &Event) -> usize {
     match ev {
         Event::Dahai { pai, .. } => pai.as_usize(),
         Event::Reach { .. } => 37,
