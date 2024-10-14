@@ -20,4 +20,16 @@ pub const TESTDATA: &[TestCase] = &[
         desc: "double_nukidora",
         data: include_str!("double_nukidora.json"),
     },
+    TestCase {
+        desc: "kan3_nuki_rinshan",
+        data: include_str!("kan3_nuki_rinshan.json"),
+    },
+    TestCase {
+        desc: "kokushi13_withnuki",
+        data: include_str!("kokushi13_withnuki.json"),
+    },
+    TestCase {
+        desc: "nukidora_doubleron",
+        data: include_str!("nukidora_doubleron.json"),
+    },
 ];

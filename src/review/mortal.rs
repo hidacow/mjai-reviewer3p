@@ -257,7 +257,6 @@ impl Reviewer<'_> {
                 junme,
                 i as f32 / events_len as f32 * 100.,
             );
-
             let output: RawAction =
                 json::from_str(&line).context("failed to parse JSON output of engine")?;
 
