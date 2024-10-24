@@ -25,6 +25,7 @@ pub struct Log {
     pub game_length: GameLength,
     pub has_aka: bool,
     pub kyokus: Vec<Kyoku>,
+    pub default_target: Option<u8>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
@@ -178,6 +179,7 @@ impl TryFrom<RawLog> for Log {
             game_length,
             has_aka,
             kyokus,
+            default_target: raw_log.target_actor,
         })
     }
 }

@@ -24,6 +24,8 @@ pub struct RawLog {
     pub(super) rate: Option<Vec<f64>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub(super) sx: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "_target_actor")]
+    pub(super) target_actor: Option<u8>,
 }
 
 #[derive(Debug, Serialize)]

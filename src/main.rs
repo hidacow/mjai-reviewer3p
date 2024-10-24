@@ -335,7 +335,9 @@ fn main() -> Result<()> {
     }
 
     // get player id
-    let player_id = player_id_opt.context("a player ID is required for review")?;
+    let player_id = player_id_opt
+        .or(log.default_target)
+        .context("a player ID is required for review")?;
     log!("players: {}", log.names.join(", "));
     log!("target: {} ({player_id})", log.names[player_id as usize]);
 
