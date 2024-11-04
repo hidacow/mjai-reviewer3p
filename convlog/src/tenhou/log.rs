@@ -90,7 +90,7 @@ impl TryFrom<RawLog> for Log {
             logs, names, rule, ..
         } = raw_log;
 
-        if rule.disp.contains('四') || rule.disp.contains("4-Player") {
+        if !rule.disp.contains('三') && !rule.disp.contains("3-Player") {
             return Err(ParseError::NotThreePlayer);
         }
         let game_length = if rule.disp.contains('東') || rule.disp.contains("East") {
