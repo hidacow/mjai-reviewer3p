@@ -10,6 +10,24 @@
   {%- endif -%}
 {%- endmacro seat_rel -%}
 
+{%- macro seat_rel3(target) -%}
+  {%- if target == 0 -%}
+    {{ fluent(key = "seat-self") }}
+  {%- elif target == 1 -%}
+    {%- if player_id == 2 -%}
+      {{ fluent(key = "seat-toimen") }}
+    {%- else -%}
+      {{ fluent(key = "seat-shimocha") }}
+    {%- endif -%}
+  {%- elif target == 2 -%}
+    {%- if player_id == 0 -%}
+      {{ fluent(key = "seat-toimen") }}
+    {%- else -%}
+      {{ fluent(key = "seat-kamicha") }}
+    {%- endif -%}
+  {%- endif -%}
+{%- endmacro seat_rel3 -%}
+
 {%- macro seat(target) -%}
   {%- set rel = (target + 4 - player_id) % 4 -%}
   {{- self::seat_rel(target=rel) -}}
