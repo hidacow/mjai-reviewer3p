@@ -177,7 +177,6 @@
                   <th>{{- fluent(key = "place-percentage", rank = 1) -}}</th>
                   <th>{{- fluent(key = "place-percentage", rank = 2) -}}</th>
                   <th>{{- fluent(key = "place-percentage", rank = 3) -}}</th>
-                  <th>{{- fluent(key = "place-percentage", rank = 4) -}}</th>
                 </tr>
               </thead>
               <tbody>
