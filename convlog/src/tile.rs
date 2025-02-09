@@ -309,7 +309,6 @@ pub fn tile_set_eq(a: &[Tile], b: &[Tile], ignore_aka: bool) -> bool {
 /**
  * End
  */
-
 #[cfg(test)]
 mod test {
     use super::*;
