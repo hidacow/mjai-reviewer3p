@@ -32,7 +32,7 @@ pub struct KyokuReview {
     pub honba: u8,
     /// Must be either (multiple) Hora(s) or one Ryukyoku
     pub end_status: Vec<Event>,
-    pub relative_scores: [i32; 4],
+    pub relative_scores: [i32; 3],
 
     pub entries: Vec<Entry>,
 }
@@ -164,7 +164,7 @@ impl Reviewer<'_> {
         let mut entries = vec![];
 
         for (i, event) in events.iter().enumerate() {
-            let to_write = json::to_string(event).unwrap();
+            let to_write = json::to_string(event)?;
             writeln!(stdin, "{to_write}").context("failed to write to engine")?;
             if verbose {
                 log!("> {to_write}");
@@ -185,7 +185,7 @@ impl Reviewer<'_> {
                 } => {
                     kyoku_review.kyoku = (bakaze.as_u8() - tu8!(E)) * 4 + kk - 1;
                     kyoku_review.honba = honba;
-                    kyoku_review.relative_scores = scores;
+                    kyoku_review.relative_scores = [scores[0], scores[1], scores[2]];
                     kyoku_review.relative_scores.rotate_left(player_id as usize);
                     tiles_left = 55;
                 }
