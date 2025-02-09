@@ -21,7 +21,7 @@ pub struct Review {
     pub temperature: f32,
     pub kyokus: Vec<KyokuReview>,
 
-    // pub relative_phi_matrix: Vec<[[f64; 4]; 4]>,
+    pub relative_phi_matrix: Vec<[[f64; 3]; 3]>,
     pub model_tag: String,
 }
 
@@ -101,7 +101,7 @@ struct Metadata {
 #[derive(Deserialize)]
 struct ExtraData {
     model_tag: String,
-    // phi_matrix: Vec<[[f64; 4]; 4]>,
+    phi_matrix: Vec<[[f64; 3]; 3]>,
 }
 
 pub struct Reviewer<'a> {
@@ -424,13 +424,13 @@ impl Reviewer<'_> {
 
         let ExtraData {
             model_tag,
-            // mut phi_matrix,
+            mut phi_matrix,
         } = json::from_str(&line).context("failed to parse JSON output of engine")?;
-        // ensure!(phi_matrix.len() == kyoku_reviews.len());
+        ensure!(phi_matrix.len() == kyoku_reviews.len());
 
-        // for k in &mut phi_matrix {
-        //     k.rotate_left(player_id as usize);
-        // }
+        for k in &mut phi_matrix {
+            k.rotate_left(player_id as usize);
+        }
 
         let status = mortal.wait()?;
         if !status.success() {
@@ -447,7 +447,7 @@ impl Reviewer<'_> {
             rating,
             temperature,
             kyokus: kyoku_reviews,
-            // relative_phi_matrix: phi_matrix,
+            relative_phi_matrix: phi_matrix,
             model_tag,
         })
     }
@@ -563,10 +563,7 @@ fn to_event(
             let consumed = [tile, tile.deaka(), tile.deaka(), tile.deaka()];
             Event::Ankan { actor, consumed }
         }
-        40 => Event::Nukidora {
-            actor,
-            pai: Tile::try_from(tu8!(N))?,
-        },
+        40 => Event::Nukidora { actor, pai: t!(N) },
         41 => Event::Hora {
             actor,
             target,

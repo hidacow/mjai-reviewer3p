@@ -11,7 +11,7 @@
 
 > **This is a fork to support reviewing 3-player mahjong.**
 >
-> You should modify the Mortal engine (Use libriichi3p, remove Grp related code, etc.) to make it work with this fork.
+> You should modify the Mortal engine (Use libriichi3p, modify Grp related code, etc.) to make it work with this fork.
 >
 > The action label (eg. 40 => Event::Nukidora) should be matched if you have another implementation of 3p model.
 

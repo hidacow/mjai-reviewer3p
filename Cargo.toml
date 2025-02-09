@@ -1,11 +1,11 @@
 [package]
-name = "mjai-reviewer"
-version = "1.5.10-3p"
-authors = ["Equim"]
+name = "mjai-reviewer3p"
+version = "1.5.11-3p"
+authors = ["Equim", "hidacow"]
 edition = "2021"
-repository = "https://github.com/Equim-chan/mjai-reviewer"
+repository = "https://github.com/hidacow/mjai-reviewer3p"
 license = "Apache-2.0"
-description = "🔍🀄️ Review your Tenhou or Mahjong Soul (Jantama) log with mjai-compatible mahjong AIs."
+description = "🔍🀄️ Review your Tenhou or Mahjong Soul (Jantama) log with mjai-compatible mahjong AIs. (3 player version)"
 
 [dependencies]
 convlog = { path = "./convlog" }

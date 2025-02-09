@@ -1102,8 +1102,8 @@ dependencies = [
 ]
 
 [[package]]
-name = "mjai-reviewer"
-version = "1.5.10-3p"
+name = "mjai-reviewer3p"
+version = "1.5.11-3p"
 dependencies = [
  "anyhow",
  "chrono",

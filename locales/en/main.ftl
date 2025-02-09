@@ -9,7 +9,7 @@ action-riichi = Riichi
 action-ron = Ron
 action-ryuukyoku = Ryuukyoku
 action-tsumo = Tsumo
-action-nukidora = Nukidora
+action-nukidora = Nuki
 
 donate-header = Donate
 
