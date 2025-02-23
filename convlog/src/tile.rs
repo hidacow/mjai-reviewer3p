@@ -156,11 +156,7 @@ impl Tile {
             1 => Self(tid - 9),
             _ => tile,
         };
-        if self.is_aka() {
-            ret.akaize()
-        } else {
-            ret
-        }
+        if self.is_aka() { ret.akaize() } else { ret }
     }
 }
 
